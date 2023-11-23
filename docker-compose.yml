@@ -1,0 +1,43 @@
+version: '3'
+services:
+  go-bank-service:
+    container_name: go-bank-api
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - go-bank-postgres
+    ports:
+      - 50052:50052
+    restart: on-failure
+    networks:
+      - fullstack
+    environment:
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
+      - DB_HOST=${DB_HOST}
+      - PORT=${PORT}
+
+  go-bank-postgres:
+    image: postgres:latest
+    container_name: ${DB_HOST}
+    environment:
+      - POSTGRES_USER=${DB_USER}  
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST} 
+    ports:
+      - '5436:5432'
+    volumes:
+      - database_postgres:/var/lib/postgresql/data
+    networks:
+      - fullstack
+
+networks:
+  fullstack:
+    external: true
+
+volumes:
+  database_postgres:
+
